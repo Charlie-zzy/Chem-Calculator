@@ -66,7 +66,7 @@ public:
 short color[10000];                                   // 字符串上色
 ll m, n, N, testIdx = 0, cnt = 1, rev, realAns[MAXN]; // 化学式个数、（调试用）字符串映射、颜色映射、（调试用）测试次数
 bool isOrdered[MAXN], debugMode = false;
-string strMap[MAXN]; // 元素映射
+string strMap[MAXN]; // 元素名映射
 vector<string> demo = {"CuSO4 + NaOH = Cu(OH)2 + Na2SO4",
                        "Cu+HNO3 = Cu(NO3)2+NO+H2O",
                        "HaoYe = Hao + Ye",
@@ -124,28 +124,7 @@ enum // 有逼格的返回值
     ERROR_NO_SOLUTION,
     ERROR_DIVIDE_BY_ZERO
 };
-// string clr(ll c) // 颜色映射
-// {
-//     switch (c)
-//     {
-//     case PLUS:
-//         return "\033[32m";
-//     case EQUAL:
-//         return "\033[1m\033[32m";
-//     case BRACE:
-//         return "\033[36m";
-//     case ANS:
-//         return "\033[1m\033[33m";
-//     case NUM:
-//         return "\033[36m";
-//     case DELETE:
-//         return "\033[9m";
-//     case XX:
-//         return "\033[0m";
-//     default:
-//         return "\033[0m";
-//     }
-// }
+
 string clr(ll c) // 颜色映射
 {
     switch (c)
@@ -196,7 +175,7 @@ ll getStringIndex(string s) // 元素映射
     strMap[m++] = s;
     return m - 1;
 }
-void clear() // 图省事
+void clear() // 暴力清零
 {
     for (ll i = 0; i < MAXN; i++)
     {
@@ -385,19 +364,19 @@ int process(string S)
         inE = (S[R] != '[' ? S[R] != ']' ? inE : false : true);
     }
 }
-int solve() // 纯正的高斯列主元消元法
+int solve() // 高斯列主元消元
 {
     ll j;
     for (ll i = 0; i < m; i++)
     {
-        for (j = i; j < m; j++) // 找一个不是零的行当工具人（工具行）
+        for (j = i; j < m; j++) // 找列主元
             if (mat[j][i] != fraction())
             {
                 swap(mat[i], mat[j]);
                 swap(ans[i], ans[j]);
                 break;
             }
-        if (j == m) // 一个能打的都没有：全是零
+        if (j == m) // 全是零
             continue;
 
         for (j = i + 1; j < m; j++)
@@ -415,11 +394,11 @@ int solve() // 纯正的高斯列主元消元法
     if (m + uke < n - 1) // 秩都不够还想让我解方程？
         return ERROR_INFINITY_SOLUTION;
 
-    for (ll i = n; i < m; i++) // 这些行应该全是零，不是零就出大问题
+    for (ll i = n; i < m; i++) // 这些行应该全是零
         if (ans[i] != fraction())
             return ERROR_NO_SOLUTION;
 
-    if (mat[n - 1][n - 1] == fraction()) // 化学方程式嘛，肯定会多一个不定元的说
+    if (mat[n - 1][n - 1] == fraction()) // 化学方程式肯定会多一个不定元的说
         mat[n - 1][n - 1] = ans[n - 1] = 1, m++;
 
     for (ll i = n - 1; i >= 0; i--)
@@ -432,7 +411,7 @@ int solve() // 纯正的高斯列主元消元法
     }
     return OK;
 }
-void debugPrint() // （调试用）输出矩阵
+void debugPrint() // （debug）输出矩阵
 {
     if (!debugMode)
         return;
@@ -583,7 +562,5 @@ int main()
                 break;
             }
     }
-
-    cout << "Fuck YOU";
     return 0;
 }
